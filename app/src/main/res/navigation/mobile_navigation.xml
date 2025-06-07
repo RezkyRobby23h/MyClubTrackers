@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.myclubtrackers.fragment.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_club"
+        android:name="com.example.myclubtrackers.fragment.ClubFragment"
+        android:label="@string/clubs"
+        tools:layout="@layout/fragment_club" />
+
+    <fragment
+        android:id="@+id/navigation_top_player"
+        android:name="com.example.myclubtrackers.fragment.TopPlayerFragment"
+        android:label="@string/top_players"
+        tools:layout="@layout/fragment_top_player" />
+
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="com.example.myclubtrackers.fragment.SettingFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_setting" />
+</navigation>

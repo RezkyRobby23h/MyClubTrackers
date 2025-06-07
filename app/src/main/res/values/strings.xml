@@ -1,3 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MyClubTrackers</string>
+
+    <!-- Navigation -->
+    <string name="home">Home</string>
+    <string name="clubs">Clubs</string>
+    <string name="top_players">Top Players</string>
+    <string name="settings">Settings</string>
+
+    <!-- Match Details -->
+    <string name="match_details">Match Details</string>
+    <string name="date_time">Date &amp; Time</string>
+    <string name="venue">Venue</string>
+    <string name="status">Status</string>
+
+    <!-- Player Stats -->
+    <string name="goals">Goals</string>
+    <string name="assists">Assists</string>
+    <string name="top_scorers">Top Scorers</string>
+    <string name="top_assists">Top Assists</string>
+    <string name="player_image">Player Image</string>
+
+    <!-- Club Info -->
+    <string name="club_logo">Club Logo</string>
+    <string name="stadium">Stadium</string>
+    <string name="founded">Founded</string>
+
+    <!-- Settings -->
+    <string name="appearance">Appearance</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="league_preference">League Preference</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="settings_saved">Settings saved</string>
+    <string name="app_info">My Club Trackers v1.0\nFinal Lab Mobile 2025</string>
+    <string name="last_updated">Last updated: %1$s</string>
+
+    <!-- Status Messages -->
+    <string name="no_matches_found">No matches found</string>
+    <string name="no_clubs_found">No clubs found</string>
+    <string name="no_data">No data</string>
+    <string name="no_internet">No internet</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="refresh">Refresh</string>
+    <string name="close">Close</string>
+
+    <!-- Error Messages -->
+    <string name="error_loading_matches">Error loading matches</string>
+    <string name="error_loading_players">Error loading players</string>
+    <string name="error_loading_clubs">Error loading clubs</string>
 </resources>
