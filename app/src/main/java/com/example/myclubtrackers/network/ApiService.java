@@ -2,7 +2,9 @@ package com.example.myclubtrackers.network;
 
 import com.example.myclubtrackers.network.response.ClubResponse;
 import com.example.myclubtrackers.network.response.FixturesResponse;
+import com.example.myclubtrackers.network.response.LeaguesResponse;
 import com.example.myclubtrackers.network.response.PlayersResponse;
+import com.example.myclubtrackers.network.response.SeasonsResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -40,4 +42,18 @@ public interface ApiService {
     Call<ClubResponse> getClubInfo(
             @Query("id") int teamId
     );
+
+    @GET("teams")
+    Call<ClubResponse> getClubsByLeague(
+           @Query("league") int leagueId, 
+           @Query("season") int season
+    );
+
+    @GET("leagues")
+    Call<LeaguesResponse> getLeagues();
+
+    @GET("leagues/seasons")
+    Call<SeasonsResponse> getAvailableSeasons(@Query("league") int leagueId);
+
+
 }

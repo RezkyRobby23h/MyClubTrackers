@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static final String BASE_URL = "https://api-football-v1.p.rapidapi.com/v3/";
-    private static final String API_KEY = "8155c4d022msh1ec1ae0e9edf8b7p1418f5jsnc04f19f02a3a";
+    private static final String API_KEY = "d31f649272msh7498822c397987ap19e5ffjsndea927d3b3d4";
     private static final String API_HOST = "api-football-v1.p.rapidapi.com";
 
     private static Retrofit retrofit = null;

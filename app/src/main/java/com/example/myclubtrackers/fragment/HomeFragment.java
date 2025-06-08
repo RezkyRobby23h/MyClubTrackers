@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment {
         showNoNetworkView(false);
 
         int leagueId = SharedPrefManager.getInstance(requireContext()).getFavoriteLeague();
-        int currentYear = 2025; // You might want to calculate this dynamically
+        int currentYear = 2024; // You might want to calculate this dynamically
 
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<FixturesResponse> call = apiService.getFixtures(leagueId, currentYear, 10); // Last 10 matches

@@ -13,14 +13,23 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myclubtrackers.R;
 import com.example.myclubtrackers.databinding.FragmentSettingBinding;
+import com.example.myclubtrackers.network.ApiService;
+import com.example.myclubtrackers.network.RetrofitClient;
+import com.example.myclubtrackers.network.response.LeaguesResponse;
 import com.example.myclubtrackers.utils.SharedPrefManager;
 import com.example.myclubtrackers.utils.ThemeUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SettingFragment extends Fragment {
 
@@ -39,7 +48,6 @@ public class SettingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupLeagueSpinner();
-        loadCurrentSettings();
 
         binding.switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // The actual theme change will be applied when Save is clicked
@@ -58,23 +66,35 @@ public class SettingFragment extends Fragment {
     }
 
     private void setupLeagueSpinner() {
-        // Map league names to their API IDs
-        leagueMap.put("Premier League (England)", 39);
-        leagueMap.put("La Liga (Spain)", 140);
-        leagueMap.put("Bundesliga (Germany)", 78);
-        leagueMap.put("Serie A (Italy)", 135);
-        leagueMap.put("Ligue 1 (France)", 61);
-        leagueMap.put("K-League (Jepang)", 98);
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+        apiService.getLeagues().enqueue(new Callback<LeaguesResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<LeaguesResponse> call, @NonNull Response<LeaguesResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<LeaguesResponse.LeagueData> leagues = response.body().getLeagues();
+                    List<String> leagueNames = new ArrayList<>();
+                    leagueMap.clear();
+                    for (LeaguesResponse.LeagueData league : leagues) {
+                        leagueNames.add(league.getName());
+                        leagueMap.put(league.getName(), league.getId());
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_dropdown_item_1line,
+                            leagueNames
+                    );
+                    binding.autoLeague.setAdapter(adapter);
+                    loadCurrentSettings(); // Set selection after loading
+                } else {
+                    Toast.makeText(requireContext(), "Gagal memuat daftar liga", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        String[] leagueNames = leagueMap.keySet().toArray(new String[0]);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                leagueNames
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerLeague.setAdapter(adapter);
+            @Override
+            public void onFailure(@NonNull Call<LeaguesResponse> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Gagal memuat daftar liga", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadCurrentSettings() {
@@ -85,8 +105,7 @@ public class SettingFragment extends Fragment {
         int currentLeagueId = SharedPrefManager.getInstance(requireContext()).getFavoriteLeague();
         for (Map.Entry<String, Integer> entry : leagueMap.entrySet()) {
             if (entry.getValue() == currentLeagueId) {
-                int position = ((ArrayAdapter) binding.spinnerLeague.getAdapter()).getPosition(entry.getKey());
-                binding.spinnerLeague.setSelection(position);
+                binding.autoLeague.setText(entry.getKey(), false);
                 break;
             }
         }
@@ -98,7 +117,7 @@ public class SettingFragment extends Fragment {
         SharedPrefManager.getInstance(requireContext()).setDarkMode(isDarkMode);
 
         // Save league preference
-        String selectedLeague = binding.spinnerLeague.getSelectedItem().toString();
+        String selectedLeague = binding.autoLeague.getText().toString();
         Integer leagueId = leagueMap.get(selectedLeague);
         if (leagueId != null) {
             SharedPrefManager.getInstance(requireContext()).setFavoriteLeague(leagueId);
