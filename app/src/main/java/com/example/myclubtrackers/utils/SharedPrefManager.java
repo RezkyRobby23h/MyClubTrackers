@@ -8,6 +8,7 @@ public class SharedPrefManager {
     private static final String KEY_THEME = "theme_key";
     private static final String KEY_LAST_UPDATE = "last_update_key";
     private static final String KEY_FAVORITE_LEAGUE = "favorite_league";
+    private static final String KEY_SEASON_YEAR = "season_year";
 
     private final SharedPreferences preferences;
     private static SharedPrefManager instance;
@@ -46,5 +47,14 @@ public class SharedPrefManager {
     public int getFavoriteLeague() {
         // Default to English Premier League (ID: 39)
         return preferences.getInt(KEY_FAVORITE_LEAGUE, 39);
+    }
+
+    public void setSeasonYear(int year) {
+        preferences.edit().putInt(KEY_SEASON_YEAR, year).apply();
+    }
+
+    public int getSeasonYear() {
+        // Default ke 2024 jika belum ada
+        return preferences.getInt(KEY_SEASON_YEAR, 2024);
     }
 }

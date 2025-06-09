@@ -42,7 +42,14 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
 
         holder.tvHomeTeam.setText(match.getHomeTeam());
         holder.tvAwayTeam.setText(match.getAwayTeam());
-        holder.tvScore.setText(String.format("%d - %d", match.getHomeScore(), match.getAwayScore()));
+
+        // Jika pertandingan belum dimulai, tampilkan kosong saja di skor
+        if ("NS".equalsIgnoreCase(match.getStatus()) || "TBD".equalsIgnoreCase(match.getStatus())) {
+            holder.tvScore.setText(""); // atau bisa pakai "-" jika ingin ada strip
+        } else {
+            holder.tvScore.setText(String.format("%d - %d", match.getHomeScore(), match.getAwayScore()));
+        }
+
         holder.tvLeague.setText(match.getLeague());
         holder.tvDate.setText(DateFormatter.formatApiDate(match.getDate()));
         holder.tvTime.setText(match.getTime());

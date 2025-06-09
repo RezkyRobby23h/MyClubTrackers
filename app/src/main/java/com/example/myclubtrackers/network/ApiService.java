@@ -20,6 +20,13 @@ public interface ApiService {
     );
 
     @GET("fixtures")
+    Call<FixturesResponse> getNextFixtures(
+            @Query("league") int leagueId,
+            @Query("season") int season,
+            @Query("next") int nextMatches
+    );
+
+    @GET("fixtures")
     Call<FixturesResponse> getTeamFixtures(
             @Query("team") int teamId,
             @Query("season") int season,

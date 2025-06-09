@@ -64,52 +64,57 @@ public class HomeFragment extends Fragment {
 
     private void loadMatches() {
         if (NetworkUtils.isNetworkAvailable(requireContext())) {
-            loadMatchesFromApi();
+            loadPastAndUpcomingMatches();
         } else {
             loadMatchesFromDb();
             showNoNetworkView(true);
         }
     }
 
-    private void loadMatchesFromApi() {
+    private void loadPastAndUpcomingMatches() {
         binding.swipeRefresh.setRefreshing(true);
         showNoNetworkView(false);
 
         int leagueId = SharedPrefManager.getInstance(requireContext()).getFavoriteLeague();
-        int currentYear = 2024; // You might want to calculate this dynamically
+        int currentYear = SharedPrefManager.getInstance(requireContext()).getSeasonYear();
 
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<FixturesResponse> call = apiService.getFixtures(leagueId, currentYear, 10); // Last 10 matches
 
-        call.enqueue(new Callback<FixturesResponse>() {
+        // Call for next 5 matches (akan datang)
+        Call<FixturesResponse> nextMatchesCall = apiService.getNextFixtures(leagueId, currentYear, 5);
+        // Call for last 10 matches (sudah berlalu)
+        Call<FixturesResponse> lastMatchesCall = apiService.getFixtures(leagueId, currentYear, 10);
+
+        nextMatchesCall.enqueue(new Callback<FixturesResponse>() {
             @Override
             public void onResponse(@NonNull Call<FixturesResponse> call, @NonNull Response<FixturesResponse> response) {
-                binding.swipeRefresh.setRefreshing(false);
-
+                List<Match> matches = new ArrayList<>();
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Match> matches = new ArrayList<>();
-                    List<MatchEntity> matchEntities = new ArrayList<>();
-
                     for (FixturesResponse.FixtureData fixtureData : response.body().getFixtures()) {
-                        Match match = fixtureData.toMatch();
-                        matches.add(match);
-                        matchEntities.add(MatchEntity.fromMatch(match));
+                        matches.add(fixtureData.toMatch());
+                    }
+                }
+                // Setelah dapat match yang akan datang, lanjut ambil match yang sudah berlalu
+                lastMatchesCall.enqueue(new Callback<FixturesResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<FixturesResponse> call, @NonNull Response<FixturesResponse> response) {
+                        binding.swipeRefresh.setRefreshing(false);
+                        if (response.isSuccessful() && response.body() != null) {
+                            for (FixturesResponse.FixtureData fixtureData : response.body().getFixtures()) {
+                                matches.add(fixtureData.toMatch());
+                            }
+                        }
+                        adapter.setMatches(matches);
+                        showEmptyView(matches.isEmpty());
                     }
 
-                    adapter.setMatches(matches);
-
-                    // Save to database in background
-                    executor.execute(() -> {
-                        database.matchDao().deleteAll();
-                        database.matchDao().insertAll(matchEntities);
-
-                        SharedPrefManager.getInstance(requireContext()).setLastUpdateTime(System.currentTimeMillis());
-                    });
-
-                    showEmptyView(matches.isEmpty());
-                } else {
-                    showError(getString(R.string.error_loading_matches));
-                }
+                    @Override
+                    public void onFailure(@NonNull Call<FixturesResponse> call, @NonNull Throwable t) {
+                        binding.swipeRefresh.setRefreshing(false);
+                        adapter.setMatches(matches); // Tampilkan yang sudah didapat
+                        showEmptyView(matches.isEmpty());
+                    }
+                });
             }
 
             @Override

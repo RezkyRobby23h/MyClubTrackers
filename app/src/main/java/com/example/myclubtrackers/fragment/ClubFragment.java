@@ -84,10 +84,10 @@ public class ClubFragment extends Fragment {
         showNoNetworkView(false);
 
         int leagueId = SharedPrefManager.getInstance(requireContext()).getFavoriteLeague();
-        int season = 2024; // Atur sesuai kebutuhan, bisa juga dinamis
+        int currentYear = SharedPrefManager.getInstance(requireContext()).getSeasonYear();
 
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<ClubResponse> call = apiService.getClubsByLeague(leagueId, season);
+        Call<ClubResponse> call = apiService.getClubsByLeague(leagueId, currentYear);
 
         call.enqueue(new Callback<ClubResponse>() {
             @Override

@@ -48,6 +48,7 @@ public class SettingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupLeagueSpinner();
+        setupSeasonYearDropdown();
 
         binding.switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // The actual theme change will be applied when Save is clicked
@@ -97,6 +98,23 @@ public class SettingFragment extends Fragment {
         });
     }
 
+    private void setupSeasonYearDropdown() {
+        List<String> years = new ArrayList<>();
+        for (int y = 2020; y <= 2025; y++) {
+            years.add(String.valueOf(y));
+        }
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                years
+        );
+        binding.autoSeasonYear.setAdapter(yearAdapter);
+
+        // Set tahun yang tersimpan
+        int savedYear = SharedPrefManager.getInstance(requireContext()).getSeasonYear();
+        binding.autoSeasonYear.setText(String.valueOf(savedYear), false);
+    }
+
     private void loadCurrentSettings() {
         // Set the dark mode switch
         binding.switchTheme.setChecked(SharedPrefManager.getInstance(requireContext()).isDarkMode());
@@ -109,6 +127,10 @@ public class SettingFragment extends Fragment {
                 break;
             }
         }
+
+        // Set the selected season year
+        int savedYear = SharedPrefManager.getInstance(requireContext()).getSeasonYear();
+        binding.autoSeasonYear.setText(String.valueOf(savedYear), false);
     }
 
     private void saveSettings() {
@@ -122,6 +144,13 @@ public class SettingFragment extends Fragment {
         if (leagueId != null) {
             SharedPrefManager.getInstance(requireContext()).setFavoriteLeague(leagueId);
         }
+
+        // Save season year
+        String selectedYear = binding.autoSeasonYear.getText().toString();
+        try {
+            int year = Integer.parseInt(selectedYear);
+            SharedPrefManager.getInstance(requireContext()).setSeasonYear(year);
+        } catch (NumberFormatException ignored) {}
 
         Toast.makeText(requireContext(), R.string.settings_saved, Toast.LENGTH_SHORT).show();
 
