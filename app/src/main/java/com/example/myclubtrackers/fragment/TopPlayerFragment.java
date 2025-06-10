@@ -95,8 +95,8 @@ public class TopPlayerFragment extends Fragment {
 
     private void showNoNetworkView(boolean show) {
         binding.noNetworkView.setVisibility(show ? View.VISIBLE : View.GONE);
-        binding.viewPager.setVisibility(show ? View.GONE : View.VISIBLE);
-        binding.tabLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        // binding.viewPager.setVisibility(show ? View.GONE : View.VISIBLE);
+        // binding.tabLayout.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     @Override

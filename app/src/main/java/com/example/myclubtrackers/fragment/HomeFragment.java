@@ -106,6 +106,16 @@ public class HomeFragment extends Fragment {
                         }
                         adapter.setMatches(matches);
                         showEmptyView(matches.isEmpty());
+
+                        // Tambahkan proses simpan ke database setelah data dari API berhasil digabungkan
+                        List<MatchEntity> matchEntities = new ArrayList<>();
+                        for (Match match : matches) {
+                            matchEntities.add(MatchEntity.fromMatch(match));
+                        }
+                        executor.execute(() -> {
+                            database.matchDao().deleteAll();
+                            database.matchDao().insertAll(matchEntities);
+                        });
                     }
 
                     @Override
