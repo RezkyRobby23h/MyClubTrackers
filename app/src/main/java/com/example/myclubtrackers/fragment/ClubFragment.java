@@ -1,6 +1,8 @@
 package com.example.myclubtrackers.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,18 +11,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
 import com.example.myclubtrackers.R;
-import com.example.myclubtrackers.adapter.ClubAdapter;
+import com.example.myclubtrackers.adapter.StandingsAdapter;
 import com.example.myclubtrackers.databinding.FragmentClubBinding;
 import com.example.myclubtrackers.database.AppDatabase;
-import com.example.myclubtrackers.database.entity.ClubEntity;
-import com.example.myclubtrackers.model.Club;
+import com.example.myclubtrackers.database.dao.StandingDao;
+import com.example.myclubtrackers.database.entity.StandingEntity;
 import com.example.myclubtrackers.network.ApiService;
 import com.example.myclubtrackers.network.RetrofitClient;
-import com.example.myclubtrackers.network.response.ClubResponse;
+import com.example.myclubtrackers.network.response.StandingsResponse;
 import com.example.myclubtrackers.utils.NetworkUtils;
 import com.example.myclubtrackers.utils.SharedPrefManager;
 
@@ -36,10 +37,8 @@ import retrofit2.Response;
 public class ClubFragment extends Fragment {
 
     private FragmentClubBinding binding;
-    private ClubAdapter adapter;
+    private StandingsAdapter adapter;
     private final Executor executor = Executors.newSingleThreadExecutor();
-    private AppDatabase database;
-    private Club selectedClub;
 
     @Nullable
     @Override
@@ -52,117 +51,110 @@ public class ClubFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = AppDatabase.getInstance(requireContext());
-        adapter = new ClubAdapter(requireContext());
-
-        binding.recyclerClubs.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        adapter = new StandingsAdapter(requireContext());
+        binding.recyclerClubs.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerClubs.setAdapter(adapter);
 
-        adapter.setOnClubClickListener(club -> {
-            selectedClub = club;
-            showClubDetails();
-        });
+        binding.swipeRefresh.setOnRefreshListener(this::loadStandings);
+        binding.btnRefresh.setOnClickListener(v -> loadStandings());
 
-        binding.swipeRefresh.setOnRefreshListener(this::loadClubs);
-        binding.btnRefresh.setOnClickListener(v -> loadClubs());
-        binding.btnCloseDetails.setOnClickListener(v -> hideClubDetails());
-
-        loadClubs();
+        loadStandings();
     }
 
-    private void loadClubs() {
-        if (NetworkUtils.isNetworkAvailable(requireContext())) {
-            loadClubsFromApi();
-        } else {
-            loadClubsFromDb();
-            showNoNetworkView(true);
-        }
-    }
-
-    private void loadClubsFromApi() {
+    private void loadStandings() {
         binding.swipeRefresh.setRefreshing(true);
         showNoNetworkView(false);
 
         int leagueId = SharedPrefManager.getInstance(requireContext()).getFavoriteLeague();
         int currentYear = SharedPrefManager.getInstance(requireContext()).getSeasonYear();
 
+        if (!NetworkUtils.isNetworkAvailable(requireContext())) {
+            loadStandingsOffline(leagueId, currentYear);
+            return;
+        }
+
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<ClubResponse> call = apiService.getClubsByLeague(leagueId, currentYear);
+        Call<StandingsResponse> call = apiService.getStandings(leagueId, currentYear);
 
-        call.enqueue(new Callback<ClubResponse>() {
+        call.enqueue(new Callback<StandingsResponse>() {
             @Override
-            public void onResponse(@NonNull Call<ClubResponse> call, @NonNull Response<ClubResponse> response) {
+            public void onResponse(@NonNull Call<StandingsResponse> call, @NonNull Response<StandingsResponse> response) {
                 binding.swipeRefresh.setRefreshing(false);
-
-                if (response.isSuccessful() && response.body() != null && !response.body().getTeams().isEmpty()) {
-                    List<Club> clubs = new ArrayList<>();
-                    List<ClubEntity> clubEntities = new ArrayList<>();
-
-                    for (ClubResponse.TeamData teamData : response.body().getTeams()) {
-                        Club club = teamData.toClub();
-                        clubs.add(club);
-                        clubEntities.add(ClubEntity.fromClub(club));
-                    }
-
-                    adapter.setClubs(clubs);
-                    showEmptyView(clubs.isEmpty());
-
-                    executor.execute(() -> {
-                        database.clubDao().deleteAll();
-                        database.clubDao().insertAll(clubEntities);
-                    });
+                if (response.isSuccessful() && response.body() != null && !response.body().getResponse().isEmpty()) {
+                    List<StandingsResponse.Standing> standings = response.body().getResponse().get(0).league.standings.get(0);
+                    adapter.setStandings(standings);
+                    showEmptyView(standings.isEmpty());
+                    saveStandingsToDb(leagueId, currentYear, standings);
                 } else {
                     showError(getString(R.string.error_loading_clubs));
-                    loadClubsFromDb();
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<ClubResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<StandingsResponse> call, @NonNull Throwable t) {
                 binding.swipeRefresh.setRefreshing(false);
                 showError(t.getMessage());
-                loadClubsFromDb();
+                loadStandingsOffline(leagueId, currentYear);
             }
         });
     }
 
-    private void loadClubsFromDb() {
+    private void saveStandingsToDb(int leagueId, int season, List<StandingsResponse.Standing> standings) {
         executor.execute(() -> {
-            final List<ClubEntity> clubEntities = database.clubDao().getAllClubs();
-            final List<Club> clubs = new ArrayList<>();
+            AppDatabase db = AppDatabase.getInstance(requireContext());
+            StandingDao dao = db.standingDao();
+            dao.deleteByLeagueAndSeason(leagueId, season);
 
-            for (ClubEntity entity : clubEntities) {
-                clubs.add(entity.toClub());
+            List<StandingEntity> entities = new ArrayList<>();
+            for (StandingsResponse.Standing s : standings) {
+                StandingEntity e = new StandingEntity();
+                e.leagueId = leagueId;
+                e.season = season;
+                e.rank = s.rank;
+                e.teamName = s.team.name;
+                e.logoUrl = s.team.logo;
+                e.points = s.points;
+                e.played = s.all.played;
+                e.win = s.all.win;
+                e.draw = s.all.draw;
+                e.lose = s.all.lose;
+                entities.add(e);
+            }
+            dao.insertAll(entities);
+        });
+    }
+
+    private void loadStandingsOffline(int leagueId, int season) {
+        executor.execute(() -> {
+            AppDatabase db = AppDatabase.getInstance(requireContext());
+            StandingDao dao = db.standingDao();
+            List<StandingEntity> entities = dao.getStandings(leagueId, season);
+
+            List<StandingsResponse.Standing> standings = new ArrayList<>();
+            for (StandingEntity e : entities) {
+                StandingsResponse.Standing s = new StandingsResponse.Standing();
+                s.rank = e.rank;
+                s.team = new StandingsResponse.Team();
+                s.team.name = e.teamName;
+                s.team.logo = e.logoUrl;
+                s.points = e.points;
+                s.all = new StandingsResponse.AllStats();
+                s.all.played = e.played;
+                s.all.win = e.win;
+                s.all.draw = e.draw;
+                s.all.lose = e.lose;
+                standings.add(s);
             }
 
-            requireActivity().runOnUiThread(() -> {
+            new Handler(Looper.getMainLooper()).post(() -> {
                 binding.swipeRefresh.setRefreshing(false);
-                adapter.setClubs(clubs);
-                showEmptyView(clubs.isEmpty());
+                adapter.setStandings(standings);
+                showEmptyView(standings.isEmpty());
+                if (entities.isEmpty()) {
+                    showNoNetworkView(true);
+                }
             });
         });
-    }
-
-    private void showClubDetails() {
-        if (selectedClub == null) return;
-
-        binding.tvSelectedClubName.setText(selectedClub.getName());
-
-        String clubInfo = getString(R.string.stadium) + ": " + selectedClub.getStadium() + " | " +
-                getString(R.string.founded) + ": " + selectedClub.getFounded();
-        binding.tvSelectedClubInfo.setText(clubInfo);
-
-        Glide.with(requireContext())
-                .load(selectedClub.getLogo())
-                .placeholder(R.drawable.club_placeholder)
-                .error(R.drawable.club_placeholder)
-                .into(binding.ivSelectedClubLogo);
-
-        binding.clubDetailCard.setVisibility(View.VISIBLE);
-    }
-
-    private void hideClubDetails() {
-        binding.clubDetailCard.setVisibility(View.GONE);
     }
 
     private void showError(String message) {

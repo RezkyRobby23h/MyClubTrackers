@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="8dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <!-- Posisi -->
+    <TextView
+        android:id="@+id/tv_rank"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="1"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- Logo Klub -->
+    <ImageView
+        android:id="@+id/iv_team_logo"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="4dp"
+        android:contentDescription="@string/team_logo"
+        android:scaleType="centerInside"
+        android:src="@drawable/club_placeholder" />
+
+    <!-- Nama Klub -->
+    <TextView
+        android:id="@+id/tv_team"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="Nama Klub"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorPrimary"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+    <!-- Main -->
+    <TextView
+        android:id="@+id/tv_played"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="38"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- Menang -->
+    <TextView
+        android:id="@+id/tv_win"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="25"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- Seri -->
+    <TextView
+        android:id="@+id/tv_draw"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="8"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- Kalah -->
+    <TextView
+        android:id="@+id/tv_lose"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="5"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- Poin -->
+    <TextView
+        android:id="@+id/tv_points"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="83"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+</LinearLayout>

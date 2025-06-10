@@ -33,6 +33,7 @@
     <string name="appearance">Appearance</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="league_preference">League Preference</string>
+    <string name="league_season">League Season Year</string>
     <string name="save_settings">Save Settings</string>
     <string name="settings_saved">Settings saved</string>
     <string name="app_info">My Club Trackers v1.0\nFinal Lab Mobile 2025</string>
@@ -51,4 +52,17 @@
     <string name="error_loading_matches">Error loading matches</string>
     <string name="error_loading_players">Error loading players</string>
     <string name="error_loading_clubs">Error loading clubs</string>
+
+    <!-- Standings / Klasemen -->
+    <string name="empty_standings">No standings data.</string>
+    <string name="team_logo">Team Logo</string>
+
+    <!-- Standings Table Header -->
+    <string name="standings_pos">Pos</string>
+    <string name="standings_team">Team</string>
+    <string name="standings_played">P</string>
+    <string name="standings_win">W</string>
+    <string name="standings_draw">D</string>
+    <string name="standings_lose">L</string>
+    <string name="standings_points">Pts</string>
 </resources>
