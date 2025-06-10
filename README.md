@@ -42,7 +42,7 @@ Sebelum menjalankan aplikasi, pastikan Anda telah memenuhi persyaratan berikut:
 - **JDK** 8 atau lebih baru
 - **Gradle** (otomatis melalui Android Studio)
 - **Koneksi Internet** (untuk pengambilan data awal)
-- **API Key** dari [API-Football](https://dashboard.api-football.com/register)
+- **API Key** dari [API-Football]([https://dashboard.api-football.com/register](https://dashboard.api-football.com/register))
 - **Perangkat/Emulator** Android minimal API 21 (Lollipop)
 
 ---
