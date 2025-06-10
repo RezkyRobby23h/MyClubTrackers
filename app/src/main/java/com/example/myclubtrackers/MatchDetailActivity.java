@@ -2,11 +2,12 @@ package com.example.myclubtrackers;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.myclubtrackers.databinding.ActivityMatchDetailBinding;
 import com.example.myclubtrackers.model.Match;
 import com.example.myclubtrackers.utils.DateFormatter;
@@ -47,6 +48,28 @@ public class MatchDetailActivity extends AppCompatActivity {
                 DateFormatter.formatApiDate(match.getDate()), match.getTime()));
         binding.tvVenue.setText(match.getVenue());
         binding.tvStatus.setText(match.getStatus());
+
+        Glide.with(this)
+                .load(match.getHomeLogo())
+                .placeholder(R.drawable.club_placeholder)
+                .error(R.drawable.club_placeholder)
+                .into(binding.ivHomeLogo);
+
+        Glide.with(this)
+                .load(match.getAwayLogo())
+                .placeholder(R.drawable.club_placeholder)
+                .error(R.drawable.club_placeholder)
+                .into(binding.ivAwayLogo);
+
+        // Tampilkan pencetak gol jika ada
+        if (match.getGoalScorers() != null && !match.getGoalScorers().isEmpty()) {
+            binding.tvGoalScorers.setVisibility(View.VISIBLE);
+            binding.tvGoalScorers.setText(
+                    getString(R.string.goal_scorers, android.text.TextUtils.join(", ", match.getGoalScorers()))
+            );
+        } else {
+            binding.tvGoalScorers.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -13,6 +13,9 @@
     <string name="date_time">Date &amp; Time</string>
     <string name="venue">Venue</string>
     <string name="status">Status</string>
+    <string name="home_logo">Logo klub kandang</string>
+    <string name="away_logo">Logo klub tandang</string>
+    <string name="goal_scorers">Pencetak gol: %1$s</string>
 
     <!-- Player Stats -->
     <string name="goals">Goals</string>

@@ -13,7 +13,7 @@ import com.example.myclubtrackers.database.entity.ClubEntity;
 import com.example.myclubtrackers.database.entity.MatchEntity;
 import com.example.myclubtrackers.database.entity.PlayerStatsEntity;
 
-@Database(entities = {MatchEntity.class, PlayerStatsEntity.class, ClubEntity.class}, version = 1)
+@Database(entities = {MatchEntity.class, PlayerStatsEntity.class, ClubEntity.class}, version = 4)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "football_db";
     private static AppDatabase instance;

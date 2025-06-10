@@ -15,6 +15,8 @@ import com.example.myclubtrackers.MatchDetailActivity;
 import com.example.myclubtrackers.R;
 import com.example.myclubtrackers.model.Match;
 import com.example.myclubtrackers.utils.DateFormatter;
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,18 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
 
         holder.tvHomeTeam.setText(match.getHomeTeam());
         holder.tvAwayTeam.setText(match.getAwayTeam());
+
+        Glide.with(context)
+        .load(match.getHomeLogo())
+        .placeholder(R.drawable.club_placeholder)
+        .error(R.drawable.club_placeholder)
+        .into(holder.ivHomeLogo);
+
+        Glide.with(context)
+        .load(match.getAwayLogo())
+        .placeholder(R.drawable.club_placeholder)
+        .error(R.drawable.club_placeholder)
+        .into(holder.ivAwayLogo);
 
         // Jika pertandingan belum dimulai, tampilkan kosong saja di skor
         if ("NS".equalsIgnoreCase(match.getStatus()) || "TBD".equalsIgnoreCase(match.getStatus())) {
@@ -76,19 +90,22 @@ public class MatchAdapter extends RecyclerView.Adapter<MatchAdapter.MatchViewHol
     }
 
     static class MatchViewHolder extends RecyclerView.ViewHolder {
-        CardView cardMatch;
-        TextView tvHomeTeam, tvAwayTeam, tvScore, tvLeague, tvDate, tvTime, tvStatus;
+    CardView cardMatch;
+    TextView tvHomeTeam, tvAwayTeam, tvScore, tvLeague, tvDate, tvTime, tvStatus;
+    ImageView ivHomeLogo, ivAwayLogo;
 
-        MatchViewHolder(@NonNull View itemView) {
-            super(itemView);
-            cardMatch = itemView.findViewById(R.id.card_match);
-            tvHomeTeam = itemView.findViewById(R.id.tv_home_team);
-            tvAwayTeam = itemView.findViewById(R.id.tv_away_team);
-            tvScore = itemView.findViewById(R.id.tv_score);
-            tvLeague = itemView.findViewById(R.id.tv_league);
-            tvDate = itemView.findViewById(R.id.tv_date);
-            tvTime = itemView.findViewById(R.id.tv_time);
-            tvStatus = itemView.findViewById(R.id.tv_status);
-        }
+    MatchViewHolder(@NonNull View itemView) {
+        super(itemView);
+        cardMatch = itemView.findViewById(R.id.card_match);
+        tvHomeTeam = itemView.findViewById(R.id.tv_home_team);
+        tvAwayTeam = itemView.findViewById(R.id.tv_away_team);
+        tvScore = itemView.findViewById(R.id.tv_score);
+        tvLeague = itemView.findViewById(R.id.tv_league);
+        tvDate = itemView.findViewById(R.id.tv_date);
+        tvTime = itemView.findViewById(R.id.tv_time);
+        tvStatus = itemView.findViewById(R.id.tv_status);
+        ivHomeLogo = itemView.findViewById(R.id.iv_home_logo);
+        ivAwayLogo = itemView.findViewById(R.id.iv_away_logo);
     }
+}
 }

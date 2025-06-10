@@ -171,7 +171,7 @@ public class TopPlayerFragment extends Fragment {
             showNoNetworkView(false);
 
             int leagueId = SharedPrefManager.getInstance(requireContext()).getFavoriteLeague();
-            int currentYear = 2024; // You might want to calculate this dynamically
+            int currentYear = SharedPrefManager.getInstance(requireContext()).getSeasonYear();
 
             ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
             Call<PlayersResponse> call = apiService.getTopScorers(leagueId, currentYear);
@@ -299,7 +299,7 @@ public class TopPlayerFragment extends Fragment {
             showNoNetworkView(false);
 
             int leagueId = SharedPrefManager.getInstance(requireContext()).getFavoriteLeague();
-            int currentYear = 2024; // You might want to calculate this dynamically
+            int currentYear = SharedPrefManager.getInstance(requireContext()).getSeasonYear();
 
             ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
             Call<PlayersResponse> call = apiService.getTopAssists(leagueId, currentYear);

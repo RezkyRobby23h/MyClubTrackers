@@ -1,6 +1,7 @@
 package com.example.myclubtrackers.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Match implements Serializable {
     private int id;
@@ -13,12 +14,14 @@ public class Match implements Serializable {
     private String time;
     private String status;
     private String venue;
+    private String homeLogo;
+    private String awayLogo;
+    private List<String> goalScorers; // Tambahan untuk pencetak gol
 
-    public Match() {
-    }
+    public Match() {}
 
     public Match(int id, String league, String homeTeam, String awayTeam, int homeScore, int awayScore,
-                 String date, String time, String status, String venue) {
+                 String date, String time, String status, String venue, String homeLogo, String awayLogo, List<String> goalScorers) {
         this.id = id;
         this.league = league;
         this.homeTeam = homeTeam;
@@ -29,86 +32,48 @@ public class Match implements Serializable {
         this.time = time;
         this.status = status;
         this.venue = venue;
+        this.homeLogo = homeLogo;
+        this.awayLogo = awayLogo;
+        this.goalScorers = goalScorers;
     }
 
     // Getters and Setters
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getLeague() { return league; }
+    public void setLeague(String league) { this.league = league; }
 
-    public String getLeague() {
-        return league;
-    }
+    public String getHomeTeam() { return homeTeam; }
+    public void setHomeTeam(String homeTeam) { this.homeTeam = homeTeam; }
 
-    public void setLeague(String league) {
-        this.league = league;
-    }
+    public String getAwayTeam() { return awayTeam; }
+    public void setAwayTeam(String awayTeam) { this.awayTeam = awayTeam; }
 
-    public String getHomeTeam() {
-        return homeTeam;
-    }
+    public int getHomeScore() { return homeScore; }
+    public void setHomeScore(int homeScore) { this.homeScore = homeScore; }
 
-    public void setHomeTeam(String homeTeam) {
-        this.homeTeam = homeTeam;
-    }
+    public int getAwayScore() { return awayScore; }
+    public void setAwayScore(int awayScore) { this.awayScore = awayScore; }
 
-    public String getAwayTeam() {
-        return awayTeam;
-    }
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
 
-    public void setAwayTeam(String awayTeam) {
-        this.awayTeam = awayTeam;
-    }
+    public String getTime() { return time; }
+    public void setTime(String time) { this.time = time; }
 
-    public int getHomeScore() {
-        return homeScore;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setHomeScore(int homeScore) {
-        this.homeScore = homeScore;
-    }
+    public String getVenue() { return venue; }
+    public void setVenue(String venue) { this.venue = venue; }
 
-    public int getAwayScore() {
-        return awayScore;
-    }
+    public String getHomeLogo() { return homeLogo; }
+    public void setHomeLogo(String homeLogo) { this.homeLogo = homeLogo; }
 
-    public void setAwayScore(int awayScore) {
-        this.awayScore = awayScore;
-    }
+    public String getAwayLogo() { return awayLogo; }
+    public void setAwayLogo(String awayLogo) { this.awayLogo = awayLogo; }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getVenue() {
-        return venue;
-    }
-
-    public void setVenue(String venue) {
-        this.venue = venue;
-    }
+    public List<String> getGoalScorers() { return goalScorers; }
+    public void setGoalScorers(List<String> goalScorers) { this.goalScorers = goalScorers; }
 }

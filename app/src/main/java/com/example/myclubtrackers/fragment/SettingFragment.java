@@ -35,6 +35,7 @@ public class SettingFragment extends Fragment {
 
     private FragmentSettingBinding binding;
     private final Map<String, Integer> leagueMap = new HashMap<>();
+    private Call<LeaguesResponse> leaguesCall; // Untuk membatalkan request jika fragment dilepas
 
     @Nullable
     @Override
@@ -68,9 +69,11 @@ public class SettingFragment extends Fragment {
 
     private void setupLeagueSpinner() {
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        apiService.getLeagues().enqueue(new Callback<LeaguesResponse>() {
+        leaguesCall = apiService.getLeagues();
+        leaguesCall.enqueue(new Callback<LeaguesResponse>() {
             @Override
             public void onResponse(@NonNull Call<LeaguesResponse> call, @NonNull Response<LeaguesResponse> response) {
+                if (!isAdded() || binding == null) return; // Cek fragment masih aktif
                 if (response.isSuccessful() && response.body() != null) {
                     List<LeaguesResponse.LeagueData> leagues = response.body().getLeagues();
                     List<String> leagueNames = new ArrayList<>();
@@ -93,6 +96,7 @@ public class SettingFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<LeaguesResponse> call, @NonNull Throwable t) {
+                if (!isAdded() || binding == null) return; // Cek fragment masih aktif
                 Toast.makeText(requireContext(), "Gagal memuat daftar liga", Toast.LENGTH_SHORT).show();
             }
         });
@@ -164,6 +168,10 @@ public class SettingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Batalkan request jika masih berjalan
+        if (leaguesCall != null && !leaguesCall.isCanceled()) {
+            leaguesCall.cancel();
+        }
         binding = null;
     }
 }

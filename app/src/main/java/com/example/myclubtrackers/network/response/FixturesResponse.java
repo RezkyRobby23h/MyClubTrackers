@@ -3,6 +3,7 @@ package com.example.myclubtrackers.network.response;
 import com.example.myclubtrackers.model.Match;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FixturesResponse {
@@ -29,6 +30,9 @@ public class FixturesResponse {
         @SerializedName("score")
         private ScoreInfo score;
 
+        @SerializedName("events")
+        private List<EventInfo> events; // Tambahan untuk events (pencetak gol)
+
         public Match toMatch() {
             Match match = new Match();
             match.setId(fixtureInfo.id);
@@ -41,6 +45,20 @@ public class FixturesResponse {
             match.setAwayTeam(teams.away.name);
             match.setHomeScore(goals.home != null ? goals.home : 0);
             match.setAwayScore(goals.away != null ? goals.away : 0);
+            match.setHomeLogo(teams.home.logo);
+            match.setAwayLogo(teams.away.logo);
+
+            // Parsing goal scorers
+            List<String> scorers = new ArrayList<>();
+            if (events != null) {
+                for (EventInfo event : events) {
+                    if ("Goal".equalsIgnoreCase(event.type) && event.player != null) {
+                        scorers.add(event.player.name);
+                    }
+                }
+            }
+            match.setGoalScorers(scorers);
+
             return match;
         }
     }
@@ -85,6 +103,9 @@ public class FixturesResponse {
     public static class TeamInfo {
         @SerializedName("name")
         private String name;
+
+        @SerializedName("logo")
+        private String logo;
     }
 
     public static class GoalsInfo {
@@ -96,6 +117,20 @@ public class FixturesResponse {
     }
 
     public static class ScoreInfo {
-        // Contains more detailed scoring info if needed
+        // Add fields if you need more detailed scoring info
+    }
+
+    // Tambahan untuk parsing events (goal scorers)
+    public static class EventInfo {
+        @SerializedName("type")
+        private String type;
+
+        @SerializedName("player")
+        private PlayerInfo player;
+    }
+
+    public static class PlayerInfo {
+        @SerializedName("name")
+        private String name;
     }
 }
